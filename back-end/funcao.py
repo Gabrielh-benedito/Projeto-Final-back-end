@@ -68,4 +68,19 @@ def listar_produtos():
 #     print(i)
 
 
+def atualizar_preco(id_produto, novo_preco):
+    conexao, cursor = connector()
+    if conexao:
+        try:
+            cursor.execute(
+                "UPDATE produtos SET preco = %s WHERE id = %s",
+                (novo_preco, id_produto) 
+            )
+            conexao.commit()
+        except Exception as erro:
+            print("Erro ao atualizar preço: {erro}")
+        finally:
+            cursor.close()
+            conexao.close()
+    id_filme = int(input)
            
