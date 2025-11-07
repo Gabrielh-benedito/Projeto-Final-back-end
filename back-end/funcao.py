@@ -46,5 +46,26 @@ def adicionar_produto(nome, categoria, preco, quantidade):
 # if __name__ == "__main__":
 #     adicionar_produto(nome_produto, categoria_produto, preco_produto, quantidade_produto)
 
+def listar_produtos():
+    conexao, cursor = connector()
+    if conexao:
+        try:
+            cursor.execute(
+                "SELECT * FROM produtos ORDER BY id"
+            )
+            return cursor.fetchall()
+        except Exception as erro:
+            print(f"Erro ao listar produtos: {erro}")
+            return[]
+        finally:
+            cursor.close()
+            conexao.close()
+
+
+# print(f"Lista de produtos {listar_produtos()}")
+# produtos = listar_produtos()
+# for i in produtos:
+#     print(i)
+
 
            
