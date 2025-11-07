@@ -21,4 +21,4 @@ def connector():
         print(f"ERRO de conexão: {erro} ")
         return None, None
 
-# connector()s
+#connector()
