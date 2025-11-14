@@ -82,7 +82,27 @@ def atualizar_preco(id_produto, novo_preco):
         finally:
             cursor.close()
             conexao.close()
-id_produto = int(input("Digite o ID do produto que deseja atualizar: "))
-novo_preco = float(input("Adicione novo preço do produto: "))
-atualizar_preco(id_produto, novo_preco)
-           
+# id_produto = int(input("Digite o ID do produto que deseja atualizar: "))
+# novo_preco = float(input("Adicione novo preço do produto: "))
+# atualizar_preco(id_produto, novo_preco)
+
+def delete_produto(id_produto) :
+    conexao, cursor = connector()
+    if conexao:
+        try:
+            cursor.execute(
+                "DELETE FROM produtos WHERE id = %s",
+                (id_produto,)
+            )
+            conexao.commit()
+            if cursor.rowcount > 0 :
+                print("O filme foi removido com sucesso!")
+            else:
+                print("Nenhum filme foi econtrado com id fornecido. ")
+        except Exception as erro:
+            print(f"Erro ao tentar deletar produto: {erro} ")
+        finally:
+            cursor.close()
+            conexao.close()
+id_produto = int(input("Digite o ID do produto que deseja deletar: "))
+delete_produto(id_produto)
