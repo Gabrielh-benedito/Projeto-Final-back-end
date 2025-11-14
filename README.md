@@ -187,4 +187,4 @@ Projeto livre para estudo.
 
 ---
 
-Se quiser, posso gerar também o **requirements.txt**, **diagramas**, **arquitetura**, ou organizar tudo em pastas! 🚀
+
