@@ -1,68 +1,104 @@
-import streamlit as st
+import streamlit as st 
 import requests
 
 API_URL = "http://127.0.0.1:8000"
 
-st.set_page_config(page_title="Produtos", layout="wide")
-st.title("Gerenciador de produtos")
+st.set_page_config(page_title="API", layout="wide")
+st.title("Controle de Produtos e Estoque")
 
-menu = st.sidebar.radio("Menu", 
-                 ["Listar produto", "Cadastrar produto","Deletar produto","Atualizar preco"]
-                 )
-if menu == "Listar produto":
-    st.subheader("Todos os produtos")
+menu = st.sidebar.radio("Menu",
+    ["Listar Produtos", "Cadastrar Produto", "Excluir Produto", "Atualizar produto", "Valor Total em Estoque"]
+    )
+if menu == "Listar Produtos":
+    st.subheader("Todos os Produtos")
     response = requests.get(f"{API_URL}/produtos")
     if response.status_code == 200:
-        produtos = response.json().get("produtos",[])
-        if produtos:
-            st.dataframe(produtos)
-        else:
-            st.error("erro ao conectar com a API")
+       produtos = response.json().get("produtos", [])
+       if produtos:
+           st.dataframe(produtos)
+       else:
+           st.info("Nenhum produto cadastrado ainda!")
     else:
-        st.error("erro ao conectar com a API.") 
-elif menu == "Cadastrar produto":
-    st.subheader("➕ Adicionar produto")
-    titulo = st.text_input("Nome do produto")
-    genero = st.text_input("" \
-    "")
-    ano = st.number_input("Ano de Lançamento do Filme", min_value=1900, max_value= 2100, step=1)
-    nota = st.number_input("Nota do filme (0 a 10)", min_value=0.0, max_value= 10.0, step=0.5)
-    if st.button("Salvar filme"):
-        dados ={"titulo": titulo, "genero": genero, "ano": ano, "nota": nota}
-        response = requests.post(f"{API_URL}/filmes", params=dados)
+        st.error("Erro ao tentar conectar com a API.")
+
+elif menu == "Cadastrar Produto":
+    st.subheader("➕ Adicionar Produto")
+    nome = st.text_input("Nome do Produto")
+    categoria = st.text_input("Categoria do Produto")
+    preco = st.number_input("Preço do Produto", min_value=0.0, max_value=2000.00, step=0.5)
+    quantidade = st.number_input("Quantidade do Produto", min_value=0.0, max_value=1000.0, step=0.5)
+    if st.button("Salvar Produto"):
+        dados = {"nome": nome, "categoria": categoria, "preco": preco, "quantidade": quantidade}
+        response = requests.post(f"{API_URL}/produtos", params=dados)
         if response.status_code == 200:
-            st.success("Filme adicionado com sucesso!")
+            st.success("Produto adicionado com sucesso!")
         else:
-            st.error("erro ao adicionar filme. ")
-elif menu == "Deletar Filme":
-    st.subheader("🗑 Deletar Filme")
-    id_filme = st.number_input("Id do filme a excluir", min_value=1, step=1)
-    if st.button("Excluir "):
-        response =  requests.delete(f"{API_URL}/filmes/{id_filme}")
+            st.error("Erro ao adicionar produto.")
+elif menu == "Excluir Produto":
+    st.subheader("Deletar produto")
+    id_produto = st.number_input("ID do produto que deseja deletar", min_value=1 , step=1)
+    if st.button("Excluir"):
+        response = requests.delete(f"{API_URL}/produtos/{id_produto}")
         if response.status_code == 200:
             data = response.json()
-            if "erro" not in data:
-                st.success("Filme excluido com sucesso !")
-            else:
-                st.error("Erro ao tentar excluir filme!")
+            if "erro" not in data :
+                st.success("Produto deletado com sucesso !!")
+            else: 
+                st.error("Erro ao tentar excluir produto")
         else:
-            st.error("erro ao excluir o filme")
+            st.error("Erro ao tentar deletar produto")
 
-elif menu == "Atualizar Filme":
-    st.subheader("Atualizar Filme")
-    id_filme = st.number_input("ID do filme a atualizar", min_value=1,step=1)
-    nota = st.number_input("Nova nota", min_value=0.0, max_value=10.0, step=0.5)
+elif menu == "Atualizar produto":
+    st.subheader("Atualizar preço")
+    id_produto = st.number_input("ID do produto a atualizar",
+                                 min_value=1, step=1)
+    novo_preco = st.number_input("Novo preço", min_value=0.0, step=0.1)
+
     if st.button("Atualizar"):
         dados = {
-            "id_filme"
-            "nova_nota"
+            "novo_preco": novo_preco  # <-- nome correto
         }
-        response = requests.put(f"{API_URL}/filmes/{id_filme}", params=dados)
-        if response.status_cod == 200:
+
+        # Requisição PUT
+        response = requests.put(f"{API_URL}/produtos/{id_produto}",
+                                params=dados)
+
+        if response.status_code == 200:
             data = response.json()
             if "erro" not in data:
-                st.success("Filme atualizado com sucesso!")
+                st.success("Preço atualizado com sucesso!")
             else:
                 st.warning(data["erro"])
         else:
-            st.error("Erro ao atualizar filme.")
+            st.error(f"Erro ao atualizar produto: {response.text}")
+
+elif menu == "Valor Total em Estoque":
+    st.subheader("📦 Valor Total do Estoque")
+
+    response = requests.get(f"{API_URL}/produtos")
+
+    if response.status_code == 200:
+        produtos = response.json().get("produtos", [])
+
+        if produtos:
+            # Calcula o valor total
+            valor_total = sum( p["preco"] * p["quantidade"] for p in produtos )
+
+            st.metric(
+                label="Valor Total em Estoque",
+                value=f"R$ {valor_total:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+            )
+
+            # Tabela com valor individual
+            for p in produtos:
+                p["valor_total"] = p["preco"] * p["quantidade"]
+
+            st.dataframe(produtos)
+
+        else:
+            st.info("Nenhum produto cadastrado para calcular o estoque.")
+    else:
+        st.error("Erro ao conectar com a API.")
+
+
+
