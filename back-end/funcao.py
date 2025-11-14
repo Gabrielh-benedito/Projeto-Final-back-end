@@ -104,5 +104,5 @@ def delete_produto(id_produto) :
         finally:
             cursor.close()
             conexao.close()
-id_produto = int(input("Digite o ID do produto que deseja deletar: "))
-delete_produto(id_produto)
+# id_produto = int(input("Digite o ID do produto que deseja deletar: "))
+# delete_produto(id_produto)
