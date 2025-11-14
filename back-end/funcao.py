@@ -86,7 +86,7 @@ def atualizar_preco(id_produto, novo_preco):
 # novo_preco = float(input("Adicione novo preço do produto: "))
 # atualizar_preco(id_produto, novo_preco)
 
-def delete_produto(id_produto) :
+def deletar_produto(id_produto) :
     conexao, cursor = connector()
     if conexao:
         try:
@@ -106,3 +106,18 @@ def delete_produto(id_produto) :
             conexao.close()
 # id_produto = int(input("Digite o ID do produto que deseja deletar: "))
 # delete_produto(id_produto)
+
+def buscar_produto(id_produto):
+       conexao, cursor = connector()
+       if conexao:
+           try:
+               cursor.execute(
+                   "SELECT * FROM produtos WHERE id = %s",
+                   (id_produto,)
+               )
+               return cursor.fetchone()
+           except Exception as erro:
+               print(f"Erro tentar buscar produto: {erro}")
+           finally:
+               cursor.close()
+               conexao.close()

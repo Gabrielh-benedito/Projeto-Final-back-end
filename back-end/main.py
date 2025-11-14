@@ -29,3 +29,11 @@ def listar_produtos():
         )
     return {"produtos:": lista}
 
+@app.put("/produtos/{id_produto}")
+def atualizar_preco(id_produto, novo_preco: float):
+    produto = funcao.buscar_produto(id_produto)
+    if produto:
+        funcao.atualizar_preco(id_produto, novo_preco)
+        return{"Mensagem": "Preço do produto atualizado com sucasso!"}
+    else:
+        return{"erro": "produto não encontrado!"}
