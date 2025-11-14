@@ -8,5 +8,9 @@ app = FastAPI(title="Gerenciador de produtos")
 def home():
     return{"Mensagem": "Bem-vindo ao gerenciador de produtos!"}
 
+@app.post("/produtos")
+def cadastrar_produtos(nome: str, categoria: str, preco: float, quantidade: float):
+    funcao.adicionar_produto(nome, categoria, preco, quantidade)
+    return{"200": "Produto cadastrado com sucesso!"}
 
 
