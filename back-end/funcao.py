@@ -21,7 +21,7 @@ def criar_tabela():
             cursor.close()
             conexao.commit()
         
-# criar_tabela() 
+#criar_tabela() 
 
 def adicionar_produto(nome, categoria, preco, quantidade):
     conexao, cursor = connector()
@@ -82,5 +82,7 @@ def atualizar_preco(id_produto, novo_preco):
         finally:
             cursor.close()
             conexao.close()
-    id_filme = int(input)
+id_produto = int(input("Digite o ID do produto que deseja atualizar: "))
+novo_preco = float(input("Adicione novo preço do produto: "))
+atualizar_preco(id_produto, novo_preco)
            
